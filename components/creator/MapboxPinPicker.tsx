@@ -12,7 +12,7 @@ interface MapboxPinPickerProps {
     label?: string;
 }
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
 export default function MapboxPinPicker({
     initialLat = 28.6139,

@@ -11,7 +11,7 @@ export default async function DashboardRedirect() {
     } = await supabase.auth.getUser()
 
     if (!user) {
-        redirect('/login')
+        redirect('/auth/login')
     }
 
     // Redirect to user-specific dashboard ID
