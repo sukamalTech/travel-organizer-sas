@@ -1,3 +1,4 @@
+// [id]/create-trip/trips/[targetTripId]/edit/page.tsx
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
