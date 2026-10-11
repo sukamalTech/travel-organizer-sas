@@ -1,5 +1,5 @@
 
-
+// import { Suspense } from 'react';
 // import { createClient } from '@/lib/supabase/server';
 // import { redirect } from 'next/navigation';
 // import { connection } from 'next/server';
@@ -57,7 +57,8 @@
 //     redirect(`/${userId}/create-trip/trips/${newTrip.id}/edit`);
 // }
 
-// export default async function DashboardGateway({ params }: { params: Promise<{ id: string }> }) {
+// // Inner component handling params, connection, and data fetching inside Suspense
+// async function TripDashboardContent({ params }: { params: Promise<{ id: string }> }) {
 //     await connection();
 //     const { id: userId } = await params;
 
@@ -86,7 +87,7 @@
 //     return (
 //         <div className="min-h-screen w-full flex flex-col bg-background font-sans">
 //             {/* Top Navigation Header matching Editor Portal style */}
-//             <header className="h-16 bg-card/80 backdrop-blur-md border-b border-primary/20 px-6 flex items-center justify-between shadow-xs relative sticky top-0 z-50">
+//             <header className="h-16 bg-card/85 backdrop-blur-md border-b border-primary/20 px-6 flex items-center justify-between shadow-xs relative sticky top-0 z-50">
 //                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 opacity-80" />
 //                 <div className="flex items-center gap-3">
 //                     <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
@@ -211,6 +212,31 @@
 //         </div>
 //     );
 // }
+
+// // Loading Skeleton Fallback
+// function DashboardSkeleton() {
+//     return (
+//         <div className="min-h-screen w-full flex flex-col bg-background font-sans p-6 space-y-8 animate-pulse">
+//             <div className="h-16 bg-muted/40 rounded-xl" />
+//             <div className="h-48 bg-muted/40 rounded-3xl" />
+//             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+//                 <div className="h-64 bg-muted/40 rounded-3xl" />
+//                 <div className="h-64 bg-muted/40 rounded-3xl" />
+//                 <div className="h-64 bg-muted/40 rounded-3xl" />
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default function DashboardGateway({ params }: { params: Promise<{ id: string }> }) {
+//     return (
+//         <Suspense fallback={<DashboardSkeleton />}>
+//             <TripDashboardContent params={params} />
+//         </Suspense>
+//     );
+// }
+
+
 import { Suspense } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
@@ -226,9 +252,54 @@ function getModeIcon(mode: string) {
         case 'suv': return <Truck className="h-3.5 w-3.5" />;
         case 'bike': return <Bike className="h-3.5 w-3.5" />;
         case 'train': return <Train className="h-3.5 w-3.5" />;
-        case 'flight': return <Plane className="h-3.5 w-3.5" />;
+        case 'flight':
+        case 'plane': return <Plane className="h-3.5 w-3.5" />;
         case 'bus': return <Bus className="h-3.5 w-3.5" />;
         default: return <Car className="h-3.5 w-3.5" />;
+    }
+}
+
+// Dynamic Transport Mode Badge Styling helper
+function getModeStyle(mode: string = '') {
+    switch (mode.toLowerCase()) {
+        case 'car':
+        case 'suv':
+            return {
+                bg: 'bg-blue-500/10 dark:bg-blue-500/20',
+                border: 'border-blue-500/30',
+                text: 'text-blue-600 dark:text-blue-400',
+            };
+        case 'flight':
+        case 'plane':
+            return {
+                bg: 'bg-purple-500/10 dark:bg-purple-500/20',
+                border: 'border-purple-500/30',
+                text: 'text-purple-600 dark:text-purple-400',
+            };
+        case 'train':
+            return {
+                bg: 'bg-amber-500/10 dark:bg-amber-500/20',
+                border: 'border-amber-500/30',
+                text: 'text-amber-600 dark:text-amber-400',
+            };
+        case 'bus':
+            return {
+                bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+                border: 'border-emerald-500/30',
+                text: 'text-emerald-600 dark:text-emerald-400',
+            };
+        case 'bike':
+            return {
+                bg: 'bg-rose-500/10 dark:bg-rose-500/20',
+                border: 'border-rose-500/30',
+                text: 'text-rose-600 dark:text-rose-400',
+            };
+        default:
+            return {
+                bg: 'bg-primary/10',
+                border: 'border-primary/30',
+                text: 'text-primary',
+            };
     }
 }
 
@@ -297,10 +368,9 @@ async function TripDashboardContent({ params }: { params: Promise<{ id: string }
     const userTrips = trips || [];
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-background font-sans">
-            {/* Top Navigation Header matching Editor Portal style */}
-            <header className="h-16 bg-card/85 backdrop-blur-md border-b border-primary/20 px-6 flex items-center justify-between shadow-xs relative sticky top-0 z-50">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 opacity-80" />
+        <div className="min-h-screen w-full flex flex-col bg-background/95 text-foreground font-sans">
+            {/* Top Navigation Header */}
+            <header className="h-16 bg-card/85 backdrop-blur-md border-b border-border/60 px-6 flex items-center justify-between shadow-xs sticky top-0 z-50">
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
                         <Compass className="w-5 h-5 animate-spin-slow" />
@@ -322,8 +392,7 @@ async function TripDashboardContent({ params }: { params: Promise<{ id: string }
             {/* Main Content Area */}
             <div className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
                 {/* Banner / Intro Section */}
-                <div className="relative overflow-hidden rounded-3xl bg-card/70 backdrop-blur-md border border-primary/20 p-8 md:p-10 mb-10 shadow-sm">
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-purple-500 to-blue-500 opacity-80" />
+                <div className="relative overflow-hidden rounded-3xl bg-card/70 backdrop-blur-md border border-border/80 p-8 md:p-10 mb-10 shadow-sm">
                     <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                         <Compass className="w-72 h-72 text-primary" />
                     </div>
@@ -368,20 +437,20 @@ async function TripDashboardContent({ params }: { params: Promise<{ id: string }
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {userTrips.map((trip) => {
-                            const mode = trip.primary_mode || 'car';
+                            const mode = trip.primary_mode || trip.primary_transport || 'car';
+                            const modeStyle = getModeStyle(mode);
+
                             return (
                                 <Card
                                     key={trip.id}
-                                    className="group flex flex-col justify-between border-2 border-border/80 bg-card/70 backdrop-blur-md shadow-md hover:shadow-2xl hover:border-primary/60 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 relative"
+                                    className="group flex flex-col justify-between border border-border/80 bg-card/80 backdrop-blur-md shadow-sm hover:shadow-xl hover:border-primary/50 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 relative"
                                 >
-                                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary/50 via-purple-500 to-blue-500 opacity-80 group-hover:opacity-100 transition-opacity" />
-
                                     <CardHeader className="space-y-3 pb-4">
                                         <div className="flex justify-between items-start gap-3">
-                                            <CardTitle className="text-lg font-extrabold group-hover:text-primary transition-colors line-clamp-1 tracking-tight">
+                                            <CardTitle className="text-lg font-extrabold text-blue-600 dark:text-blue-400 group-hover:underline transition-colors line-clamp-1 tracking-tight">
                                                 {trip.title || 'Untitled Journey'}
                                             </CardTitle>
-                                            <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider bg-primary/10 text-primary px-3 py-1 rounded-full font-extrabold shrink-0 border border-primary/20 shadow-2xs">
+                                            <span className={`inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider px-3 py-1 rounded-full font-extrabold shrink-0 border ${modeStyle.bg} ${modeStyle.border} ${modeStyle.text}`}>
                                                 {getModeIcon(mode)}
                                                 {mode}
                                             </span>
@@ -396,7 +465,7 @@ async function TripDashboardContent({ params }: { params: Promise<{ id: string }
                                         {/* Action 1: Edit Full Itinerary */}
                                         <Link
                                             href={`/${user.id}/create-trip/trips/${trip.id}/edit`}
-                                            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary font-bold text-xs transition-all shadow-xs group/btn"
+                                            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-primary/10 hover:bg-emerald-600/10 hover:text-emerald-600 dark:hover:text-emerald-400 border border-primary/20 hover:border-emerald-500/30 text-primary font-bold text-xs transition-all shadow-xs group/btn"
                                         >
                                             <span className="flex items-center gap-2">
                                                 <Edit3 className="h-4 w-4" /> Edit Full Itinerary
@@ -407,7 +476,7 @@ async function TripDashboardContent({ params }: { params: Promise<{ id: string }
                                         {/* Action 2: Add Other Details */}
                                         <Link
                                             href={`/${user.id}/create-trip/trips/${trip.id}/others-details`}
-                                            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-400 font-bold text-xs transition-all shadow-xs group/sub"
+                                            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/10 hover:bg-emerald-600/10 hover:text-emerald-600 dark:hover:text-emerald-400 border border-purple-500/20 hover:border-emerald-500/30 text-purple-600 dark:text-purple-400 font-bold text-xs transition-all shadow-xs group/sub"
                                         >
                                             <span className="flex items-center gap-2">
                                                 <PlusCircle className="h-4 w-4 transition-transform group-hover/sub:scale-110" /> Add Other Details (Stays, Food, Sights)
