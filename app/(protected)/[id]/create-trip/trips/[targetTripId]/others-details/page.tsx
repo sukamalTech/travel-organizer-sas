@@ -18,7 +18,7 @@ export default function OthersDetailsPortal({
     const resolvedParams = use(params);
     const tripId = resolvedParams.targetTripId;
     const supabase = createClient();
-
+    const [tripName, setTripName] = useState<string>('');
     const [days, setDays] = useState<any[]>([]);
     const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<ActiveTabType>('accommodation');
@@ -151,7 +151,7 @@ export default function OthersDetailsPortal({
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-3">
-                    <span className="hidden sm:inline text-xs text-slate-500 font-mono">Trip ID: {tripId.slice(0, 8)}...</span>
+                    <span className="hidden sm:inline text-xs text-slate-500 font-mono">Trip Name: {tripId.slice(0, 8)}...</span>
 
                     {/* Category Tabs */}
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1">

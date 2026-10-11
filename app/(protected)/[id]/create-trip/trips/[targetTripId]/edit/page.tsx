@@ -390,47 +390,47 @@ export default function DesktopCreatorPortal({
             {/* Main 3-Pane Workspace Grid */}
             <div className="flex-1 grid grid-cols-12 overflow-hidden bg-muted/20">
                 {/* Pane 1: Days Timeline */}
-                <aside className="col-span-3 bg-card/70 backdrop-blur-md border-r border-border/80 p-5 flex flex-col gap-4 overflow-y-auto">
-                    <div className="flex items-center justify-between mb-1">
+                <aside className="col-span-3 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col gap-3 overflow-y-auto">
+                    <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-primary" />
-                            <h2 className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider">Days Timeline</h2>
+                            <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Days Timeline</h2>
                         </div>
                         <button
                             onClick={handleAddDay}
-                            className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition shadow-2xs font-bold"
+                            className="p-1.5 bg-blue-50 dark:bg-blue-950 hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-xl transition shadow-2xs font-bold"
                             title="Add Day"
                         >
                             <Plus className="w-4 h-4" />
                         </button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         {days.map((day) => (
                             <div
                                 key={day.id}
                                 onClick={() => handleSelectDay(day)}
-                                className={`w-full text-left p-4 rounded-2xl border-2 transition-all cursor-pointer relative overflow-hidden group ${selectedDayId === day.id
-                                    ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary/20'
-                                    : 'border-border/60 bg-card/50 hover:bg-card hover:border-primary/40 shadow-xs'
+                                className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer ${selectedDayId === day.id
+                                        ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30'
+                                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`}
                             >
                                 <div className="flex items-center justify-between gap-2">
-                                    <span className="text-xs font-extrabold text-foreground">
+                                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                                         Day {day.day_number}
                                     </span>
-                                    <div className="flex items-center gap-1.5 bg-muted/60 px-2 py-1 rounded-lg border border-border/50">
-                                        <Calendar className="w-3 h-3 text-primary" />
+                                    <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
+                                        <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                                         <input
                                             type="date"
                                             value={day.date}
                                             onClick={(e) => e.stopPropagation()}
                                             onChange={(e) => handleDateChange(day.id, e.target.value)}
-                                            className="bg-transparent text-[11px] text-muted-foreground font-mono focus:outline-none focus:text-primary cursor-pointer font-bold"
+                                            className="bg-transparent text-[11px] text-slate-600 dark:text-slate-300 font-mono focus:outline-none focus:text-blue-600 cursor-pointer font-bold"
                                         />
                                     </div>
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-2 truncate font-medium">
+                                <p className="text-xs text-slate-500 mt-2 truncate font-medium">
                                     {day.summary || 'No summary entered'}
                                 </p>
                             </div>
@@ -481,6 +481,7 @@ export default function DesktopCreatorPortal({
                                 setLegs(legs.filter((l) => l.id !== id));
                                 if (selectedLeg?.id === id) setSelectedLeg(null);
                             }}
+                            selectedLegId={selectedLeg?.id}
                         />
                     </div>
 
