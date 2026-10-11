@@ -74,25 +74,7 @@ export default function DesktopCreatorPortal({
         });
     };
 
-    // Populate form with existing leg data for editing or viewing
-    // const handleSelectLeg = (leg: LegItem) => {
-    //     setSelectedLeg(leg);
-    //     form.reset({
-    //         id: leg.id,
-    //         trip_id: tripId,
-    //         day_id: leg.day_id || selectedDayId || '',
-    //         mode: leg.mode,
-    //         origin_name: leg.origin_name,
-    //         origin_coordinates: leg.origin_coordinates || null,
-    //         destination_name: leg.destination_name,
-    //         destination_coordinates: leg.destination_coordinates || null,
-    //         departure_time: leg.departure_time ? new Date(leg.departure_time).toISOString().slice(0, 16) : '',
-    //         arrival_time: leg.arrival_time ? new Date(leg.arrival_time).toISOString().slice(0, 16) : '',
-    //         distance_km: leg.distance_km ?? undefined,
-    //         sequence_order: leg.sequence_order,
-    //         metadata: leg.metadata || {},
-    //     });
-    // };
+
     const handleSelectLeg = (leg: LegItem) => {
         setSelectedLeg(leg);
 
@@ -411,8 +393,8 @@ export default function DesktopCreatorPortal({
                                 key={day.id}
                                 onClick={() => handleSelectDay(day)}
                                 className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer ${selectedDayId === day.id
-                                        ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30'
-                                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                    ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30'
+                                    : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`}
                             >
                                 <div className="flex items-center justify-between gap-2">
