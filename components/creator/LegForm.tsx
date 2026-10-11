@@ -1,10 +1,12 @@
+
+
 // src/components/creator/LegForm.tsx
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { TravelLegFormInput } from '@/lib/validations/itinerary';
 import LegRouteMap from '@/components/creator/LegRouteMap';
-import { Clock, Ruler, MapPin, Loader2 } from 'lucide-react';
+import { Clock, Ruler, MapPin, Loader2, Ticket, Plane, Car } from 'lucide-react';
 
 interface LegFormProps {
     form: UseFormReturn<TravelLegFormInput>;
@@ -12,6 +14,7 @@ interface LegFormProps {
     isSubmitting: boolean;
     selectedLegId?: string | null;
     defaultValues?: TravelLegFormInput;
+    legDate: string; // e.g. "2026-10-12" (Fixed date for the current leg)
 }
 
 interface PlaceSuggestion {
@@ -27,16 +30,15 @@ export default function LegForm({
     onSubmit,
     isSubmitting,
     selectedLegId,
-    defaultValues
+    defaultValues,
+    legDate
 }: LegFormProps) {
     const currentMode = form.watch('mode');
     const originLat = form.watch('origin_lat');
     const originLng = form.watch('origin_lng');
     const destinationLat = form.watch('destination_lat');
     const destinationLng = form.watch('destination_lng');
-
-    const originName = form.watch('origin_name');
-    const destinationName = form.watch('destination_name');
+    const departureTime = form.watch('departure_time');
 
     // Autocomplete suggestion states
     const [originSuggestions, setOriginSuggestions] = useState<PlaceSuggestion[]>([]);
@@ -49,14 +51,33 @@ export default function LegForm({
     const originRef = useRef<HTMLDivElement>(null);
     const destRef = useRef<HTMLDivElement>(null);
 
-    // Sync form values when editing a leg
-    useEffect(() => {
-        if (defaultValues) {
-            form.reset(defaultValues);
-        }
-    }, [selectedLegId, defaultValues, form]);
+    // Compute bounds for dates
+    const fixedLegDate = legDate || new Date().toISOString().split('T')[0];
 
-    // Close dropdowns when clicking outside
+    // Max arrival date: legDate + 3 days
+    const getMaxArrivalTime = () => {
+        const d = new Date(fixedLegDate);
+        if (isNaN(d.getTime())) return undefined;
+        d.setDate(d.getDate() + 3);
+        return `${d.toISOString().split('T')[0]}T23:59`;
+    };
+
+    // Auto-fill Departure and Arrival Time based on fixed legDate
+    useEffect(() => {
+        if (defaultValues && Object.keys(defaultValues).length > 0) {
+            form.reset(defaultValues);
+        } else if (legDate) {
+            // Always set departure date to fixed legDate at 08:00 AM
+            const defaultDeparture = `${legDate}T08:00`;
+            form.setValue('departure_time', defaultDeparture, { shouldDirty: true });
+
+            // Default arrival date to fixed legDate at 12:00 PM
+            const defaultArrival = `${legDate}T12:00`;
+            form.setValue('arrival_time', defaultArrival, { shouldDirty: true });
+        }
+    }, [selectedLegId, defaultValues, form, legDate]);
+
+    // Close dropdowns on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (originRef.current && !originRef.current.contains(event.target as Node)) {
@@ -118,7 +139,7 @@ export default function LegForm({
             if (data.routes && data.routes.length > 0) {
                 const route = data.routes[0];
                 const distanceKm = (route.distance / 1000).toFixed(1);
-                form.setValue('metadata.distance_km', Number(distanceKm), { shouldDirty: true });
+                form.setValue('distance_km', Number(distanceKm), { shouldDirty: true });
 
                 const durationSeconds = route.duration;
                 const depTimeStr = form.getValues('departure_time');
@@ -133,7 +154,7 @@ export default function LegForm({
         }
     };
 
-    // Handle selecting an origin suggestion
+    // Handle origin selection
     const handleSelectOrigin = async (place: PlaceSuggestion) => {
         const [lng, lat] = place.center;
         form.setValue('origin_name', place.place_name, { shouldValidate: true, shouldDirty: true });
@@ -141,7 +162,6 @@ export default function LegForm({
         form.setValue('origin_lng', lng, { shouldValidate: true, shouldDirty: true });
         setShowOriginDropdown(false);
 
-        // If destination already exists, compute route metrics
         const destLat = form.getValues('destination_lat');
         const destLng = form.getValues('destination_lng');
         if (destLat && destLng) {
@@ -149,7 +169,7 @@ export default function LegForm({
         }
     };
 
-    // Handle selecting a destination suggestion
+    // Handle destination selection
     const handleSelectDestination = async (place: PlaceSuggestion) => {
         const [lng, lat] = place.center;
         form.setValue('destination_name', place.place_name, { shouldValidate: true, shouldDirty: true });
@@ -157,7 +177,6 @@ export default function LegForm({
         form.setValue('destination_lng', lng, { shouldValidate: true, shouldDirty: true });
         setShowDestDropdown(false);
 
-        // If origin already exists, compute route metrics
         const origLat = form.getValues('origin_lat');
         const origLng = form.getValues('origin_lng');
         if (origLat && origLng) {
@@ -167,6 +186,10 @@ export default function LegForm({
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-xs">
+            {/* Hidden Fields */}
+            <input type="hidden" {...form.register('trip_id')} />
+            <input type="hidden" {...form.register('day_id')} />
+
             {/* Transport Mode */}
             <div>
                 <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1">
@@ -188,7 +211,7 @@ export default function LegForm({
 
             {/* Origin & Destination Inputs with Auto-Suggest */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/* Origin Input */}
+                {/* Origin */}
                 <div className="relative" ref={originRef}>
                     <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1 flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-blue-600" /> Origin Name
@@ -212,7 +235,6 @@ export default function LegForm({
                         )}
                     </div>
 
-                    {/* Suggestions Dropdown */}
                     {showOriginDropdown && originSuggestions.length > 0 && (
                         <ul className="absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg">
                             {originSuggestions.map((item) => (
@@ -228,7 +250,7 @@ export default function LegForm({
                     )}
                 </div>
 
-                {/* Destination Input */}
+                {/* Destination */}
                 <div className="relative" ref={destRef}>
                     <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1 flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-emerald-600" /> Destination Name
@@ -252,7 +274,6 @@ export default function LegForm({
                         )}
                     </div>
 
-                    {/* Suggestions Dropdown */}
                     {showDestDropdown && destSuggestions.length > 0 && (
                         <ul className="absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg">
                             {destSuggestions.map((item) => (
@@ -286,24 +307,28 @@ export default function LegForm({
                 }}
             />
 
-            {/* Times */}
+            {/* DEPARTURE (Fixed to legDate) & ARRIVAL (Constrained within next 3 days) */}
             <div className="grid grid-cols-2 gap-3">
                 <div>
                     <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-blue-500" /> Departure Time
+                        <Clock className="w-3.5 h-3.5 text-blue-500" /> Departure Time ({fixedLegDate})
                     </label>
                     <input
                         type="datetime-local"
+                        min={`${fixedLegDate}T00:00`}
+                        max={`${fixedLegDate}T23:59`}
                         {...form.register('departure_time')}
                         className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                     />
                 </div>
                 <div>
                     <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-emerald-500" /> Arrival Time
+                        <Clock className="w-3.5 h-3.5 text-emerald-500" /> Arrival Time (Max +3 Days)
                     </label>
                     <input
                         type="datetime-local"
+                        min={departureTime || `${fixedLegDate}T00:00`}
+                        max={getMaxArrivalTime()}
                         {...form.register('arrival_time')}
                         className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                     />
@@ -319,10 +344,153 @@ export default function LegForm({
                     type="number"
                     step="0.1"
                     placeholder="e.g. 185.5"
-                    {...form.register('metadata.distance_km')}
+                    {...form.register('distance_km')}
                     className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                 />
             </div>
+
+            {/* MODE-SPECIFIC METADATA FIELDS */}
+            {(currentMode === 'car' || currentMode === 'bike') && (
+                <div className="p-3 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+                        <Car className="w-4 h-4 text-blue-500" /> Vehicle & Route Details
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-slate-500 mb-1">Highway / Route Number</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. NH-16"
+                                {...form.register('metadata.highway_number')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Road Condition</label>
+                            <select
+                                {...form.register('metadata.road_condition')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            >
+                                <option value="smooth">Smooth</option>
+                                <option value="patchy">Patchy</option>
+                                <option value="gravel">Gravel</option>
+                                <option value="severe">Severe</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {(currentMode === 'train' || currentMode === 'bus' || currentMode === 'ferry') && (
+                <div className="p-3 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+                        <Ticket className="w-4 h-4 text-emerald-500" /> Transit Booking & Ticket Details
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-slate-500 mb-1">Transit / Operator Name</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Rajdhani Express"
+                                {...form.register('metadata.train_name')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Train / Service Number</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 12301"
+                                {...form.register('metadata.train_number')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">PNR / Booking Reference</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. PNR-987654"
+                                {...form.register('metadata.pnr')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Coach / Seat Number</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. A2 - 45"
+                                {...form.register('metadata.seat_number')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Platform / Terminal</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Platform 4"
+                                {...form.register('metadata.departure_platform')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Fare (Currency)</label>
+                            <input
+                                type="number"
+                                step="any"
+                                placeholder="e.g. 1200"
+                                {...form.register('metadata.fare')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {currentMode === 'flight' && (
+                <div className="p-3 bg-slate-100 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+                        <Plane className="w-4 h-4 text-sky-500" /> Flight & Airline Details
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-slate-500 mb-1">Airline</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. IndiGo"
+                                {...form.register('metadata.airline')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Flight Number</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. 6E-452"
+                                {...form.register('metadata.flight_number')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Terminal</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Terminal 2"
+                                {...form.register('metadata.terminal')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-slate-500 mb-1">Gate & Seat</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Gate 12, Seat 14A"
+                                {...form.register('metadata.seat')}
+                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <button
                 type="submit"

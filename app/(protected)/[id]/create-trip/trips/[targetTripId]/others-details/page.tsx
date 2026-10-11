@@ -1,7 +1,9 @@
+
+
 'use client';
 import React, { useState, useEffect, use } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Compass, Save, Building2, Utensils, MapPin, Plus, AlertCircle } from 'lucide-react';
+import { Compass, Save, Building2, Utensils, MapPin, Plus, AlertCircle, ArrowLeft, Calendar, ListFilter } from 'lucide-react';
 import OthersSidebarTimeline from '@/components/creator/OthersSidebarTimeline';
 import OthersItemList from '@/components/creator/OthersItemList';
 import OthersFormPanel from '@/components/creator/OthersFormPanel';
@@ -31,6 +33,9 @@ export default function OthersDetailsPortal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Mobile view step tracker ('days' | 'list' | 'form') for small screens
+    const [mobileView, setMobileView] = useState<'days' | 'list' | 'form'>('days');
 
     // Fetch Trip Days from Supabase
     useEffect(() => {
@@ -109,6 +114,9 @@ export default function OthersDetailsPortal({
             setSelectedItem(null);
             await fetchTiDBData();
             setTimeout(() => setSuccessMessage(null), 3000);
+
+            // Return to list view on mobile after successful save
+            setMobileView('list');
         } catch (err: any) {
             setErrorMessage(err.message);
         } finally {
@@ -134,67 +142,117 @@ export default function OthersDetailsPortal({
     return (
         <div className="h-screen w-full flex flex-col bg-slate-100 dark:bg-slate-950 font-sans overflow-hidden">
             {/* Top Navigation Header */}
-            <header className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between">
+            <header className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2">
-                    <Compass className="w-5 h-5 text-blue-600" />
-                    <h1 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                        Trip Logistics & Experiences Portal
+                    <Compass className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                    <h1 className="font-bold text-slate-800 dark:text-slate-100 text-xs md:text-sm truncate">
+                        Trip Logistics Portal
                     </h1>
                 </div>
-                <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500 font-mono">Trip ID: {tripId.slice(0, 8)}...</span>
+
+                <div className="flex items-center gap-2 md:gap-3">
+                    <span className="hidden sm:inline text-xs text-slate-500 font-mono">Trip ID: {tripId.slice(0, 8)}...</span>
+
+                    {/* Category Tabs */}
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1">
                         <button
                             onClick={() => { setActiveTab('accommodation'); setSelectedItem(null); }}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'accommodation' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                                }`}
+                            className={`flex items-center gap-1.5 px-2.5 md:px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'accommodation' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
                         >
-                            <Building2 className="w-3.5 h-3.5" /> Stays
+                            <Building2 className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Stays</span>
                         </button>
                         <button
                             onClick={() => { setActiveTab('attraction'); setSelectedItem(null); }}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'attraction' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                                }`}
+                            className={`flex items-center gap-1.5 px-2.5 md:px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'attraction' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
                         >
-                            <MapPin className="w-3.5 h-3.5" /> Attractions
+                            <MapPin className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Attractions</span>
                         </button>
                         <button
                             onClick={() => { setActiveTab('dining'); setSelectedItem(null); }}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'dining' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                                }`}
+                            className={`flex items-center gap-1.5 px-2.5 md:px-3 py-1 rounded-lg text-xs font-bold transition ${activeTab === 'dining' ? 'bg-white dark:bg-slate-900 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
                         >
-                            <Utensils className="w-3.5 h-3.5" /> Dining
+                            <Utensils className="w-3.5 h-3.5" /> <span className="hidden xs:inline">Dining</span>
                         </button>
                     </div>
                 </div>
             </header>
 
-            {/* Main 3-Pane Workspace Grid */}
-            <div className="flex-1 grid grid-cols-12 overflow-hidden">
-                {/* Pane 1: Days Timeline (Fetched from Supabase) */}
-                <OthersSidebarTimeline
-                    days={days}
-                    selectedDayId={selectedDayId}
-                    onSelectDay={(day) => {
-                        setSelectedDayId(day.id);
-                        setSelectedItem(null);
-                    }}
-                />
+            {/* Mobile Navigation Breadcrumb / View Switcher Bar */}
+            <div className="lg:hidden flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-2 shrink-0 text-xs">
+                <div className="flex items-center gap-2">
+                    {mobileView !== 'days' && (
+                        <button
+                            onClick={() => setMobileView(mobileView === 'form' ? 'list' : 'days')}
+                            className="flex items-center gap-1 text-blue-600 font-bold px-2 py-1 bg-blue-50 dark:bg-blue-950 rounded-lg"
+                        >
+                            <ArrowLeft className="w-3.5 h-3.5" /> Back
+                        </button>
+                    )}
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {mobileView === 'days' && 'Step 1: Select Day'}
+                        {mobileView === 'list' && `Step 2: ${activeTab.toUpperCase()} List`}
+                        {mobileView === 'form' && `Step 3: ${selectedItem?.id ? 'Edit' : 'Add'} ${activeTab}`}
+                    </span>
+                </div>
+                <div className="flex gap-1">
+                    <button
+                        onClick={() => setMobileView('days')}
+                        className={`px-2.5 py-1 rounded-md font-medium ${mobileView === 'days' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+                    >
+                        Days
+                    </button>
+                    <button
+                        onClick={() => setMobileView('list')}
+                        className={`px-2.5 py-1 rounded-md font-medium ${mobileView === 'list' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+                    >
+                        Items
+                    </button>
+                    <button
+                        onClick={() => setMobileView('form')}
+                        className={`px-2.5 py-1 rounded-md font-medium ${mobileView === 'form' ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+                    >
+                        Form
+                    </button>
+                </div>
+            </div>
 
-                {/* Pane 2: Categorized Item List filtered by Selected Day */}
-                <OthersItemList
-                    activeTab={activeTab}
-                    selectedDayId={selectedDayId}
-                    accommodations={accommodations}
-                    attractions={attractions}
-                    diningSpots={diningSpots}
-                    onSelectItem={(item) => setSelectedItem(item)}
-                    onDeleteItem={handleDeleteItem}
-                    onAddNew={() => setSelectedItem({})}
-                />
+            {/* Workspace Grid: Responsive for mobile (stacked via mobileView state) & Desktop (3-column grid) */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden relative">
+                {/* Pane 1: Days Timeline */}
+                <div className={`lg:col-span-3 h-full overflow-hidden ${mobileView === 'days' ? 'block' : 'hidden lg:block'}`}>
+                    <OthersSidebarTimeline
+                        days={days}
+                        selectedDayId={selectedDayId}
+                        onSelectDay={(day) => {
+                            setSelectedDayId(day.id);
+                            setSelectedItem(null);
+                            setMobileView('list'); // Auto advance to item list on mobile after picking a day
+                        }}
+                    />
+                </div>
+
+                {/* Pane 2: Categorized Item List */}
+                <div className={`lg:col-span-4 h-full overflow-hidden border-x border-slate-200 dark:border-slate-800 ${mobileView === 'list' ? 'block' : 'hidden lg:block'}`}>
+                    <OthersItemList
+                        activeTab={activeTab}
+                        selectedDayId={selectedDayId}
+                        accommodations={accommodations}
+                        attractions={attractions}
+                        diningSpots={diningSpots}
+                        onSelectItem={(item) => {
+                            setSelectedItem(item);
+                            setMobileView('form'); // Auto advance to form on mobile when editing item
+                        }}
+                        onDeleteItem={handleDeleteItem}
+                        onAddNew={() => {
+                            setSelectedItem({});
+                            setMobileView('form'); // Auto advance to form on mobile when creating new
+                        }}
+                    />
+                </div>
 
                 {/* Pane 3: Dynamic Editor/Creation Form */}
-                <main className="col-span-5 p-5 bg-white dark:bg-slate-900 overflow-y-auto space-y-4">
+                <main className={`lg:col-span-5 h-full p-4 md:p-5 bg-white dark:bg-slate-900 overflow-y-auto space-y-4 ${mobileView === 'form' ? 'block' : 'hidden lg:block'}`}>
                     <div>
                         <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                             {selectedItem?.id ? `Edit ${activeTab}` : `Add New ${activeTab}`}
@@ -222,7 +280,10 @@ export default function OthersDetailsPortal({
                         selectedItem={selectedItem}
                         isSubmitting={isSubmitting}
                         onSubmit={handleSaveItem}
-                        onCancel={() => setSelectedItem(null)}
+                        onCancel={() => {
+                            setSelectedItem(null);
+                            setMobileView('list');
+                        }}
                     />
                 </main>
             </div>
