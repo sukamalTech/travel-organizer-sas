@@ -102,6 +102,9 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ThemeToggle';  // Adjust path if needed
+import { Suspense } from 'react';
+import { AuthButton } from '../auth-button';
+import { LogoutButton } from '../logout-button';
 
 export default function Header({ userId }: { userId: string }) {
     return (
@@ -109,15 +112,7 @@ export default function Header({ userId }: { userId: string }) {
             <div className="container mx-auto h-full flex items-center justify-between px-4 sm:px-6 max-w-7xl">
 
                 {/* Left Side: Compact Brand / Home Link (Responsive Text & Icon) */}
-                <Link
-                    href={`/${userId}`}
-                    className="flex items-center gap-2 font-extrabold text-foreground text-base sm:text-lg tracking-tight hover:opacity-80 transition-opacity"
-                >
-                    <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
-                        <Compass className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <span>Portal</span>
-                </Link>
+                <Link href={"/"}>TravellE</Link>
 
                 {/* Right Side: Theme Toggle & Hamburger Dropdown Menu */}
                 <div className="flex items-center gap-3">
@@ -156,10 +151,10 @@ export default function Header({ userId }: { userId: string }) {
                             <DropdownMenuSeparator className="my-1 border-border/60" />
 
                             <DropdownMenuItem asChild className="rounded-xl cursor-pointer text-xs sm:text-sm font-semibold py-2.5 text-rose-600 dark:text-rose-400 focus:text-rose-600 dark:focus:text-rose-400">
-                                <Link href="/auth/logout" className="flex items-center gap-2.5">
-                                    <LogOut className="h-4 w-4" />
-                                    <span>Log out</span>
-                                </Link>
+                                <Suspense>
+                                    <LogoutButton />
+                                    {/* <AuthButton /> */}
+                                </Suspense>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
