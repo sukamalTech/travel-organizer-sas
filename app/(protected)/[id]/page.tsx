@@ -54,6 +54,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { User, ArrowRight } from 'lucide-react'
+import CreateTripCard from './_components/CreateTripCard'
 
 // Prevents Next.js 16 build error by allowing dynamic request execution during SSR
 export const instant = false
@@ -80,7 +81,7 @@ export default async function UserDashboard({
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                <Card className="hover:border-slate-400 transition-all">
+                {/* <Card className="hover:border-slate-400 transition-all">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>View Profile</span>
@@ -99,8 +100,8 @@ export default async function UserDashboard({
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </CardContent>
-                </Card>
-                <Card className="hover:border-slate-400 transition-all">
+                </Card> */}
+                {/* <Card className="hover:border-slate-400 transition-all">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                             <span>Create Trip</span>
@@ -119,7 +120,8 @@ export default async function UserDashboard({
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </CardContent>
-                </Card>
+                </Card> */}
+                <CreateTripCard id={id} />
                 <Card className="hover:border-slate-400 transition-all">
                     <CardHeader>
                         <CardTitle className="flex items-center justify-between">

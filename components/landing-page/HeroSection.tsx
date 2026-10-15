@@ -26,6 +26,7 @@ import {
     ChevronDown
 } from "lucide-react";
 import { itineraryItems } from "@/lib/constants/landingpageconstant";
+import Link from 'next/link';
 export default function HeroSection() {
     const [selectedPin, setSelectedPin] = useState(0);
     return (
@@ -46,10 +47,10 @@ export default function HeroSection() {
                         Plan smarter, travel deeper. Replace spreadsheet chaos with a unified, real-time interactive canvas synced directly to custom daywise itineraries and dynamic live maps.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a href="#pricing" className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 hover:opacity-95 shadow-xl shadow-indigo-600/30 transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-3">
+                        <Link href="/auth/sign-up" className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-600 hover:opacity-95 shadow-xl shadow-indigo-600/30 transition-all transform hover:-translate-y-1 flex items-center justify-center space-x-3">
                             <span>Launch Workspace Free</span>
                             <ArrowRight className="w-5 h-5" />
-                        </a>
+                        </Link>
                         <a href="#features" className="w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 bg-slate-200/70 dark:bg-slate-800/70 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all flex items-center justify-center space-x-2">
                             <PlayCircle className="w-5 h-5 text-indigo-500" />
                             <span>Watch 2-Min Demo</span>

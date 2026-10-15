@@ -38,6 +38,8 @@ export default function Navbar() {
                     <Link href="#audience" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Workflows</Link>
                     <Link href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
                     <Link href="#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">FAQ</Link>
+                    <Link href="/auth/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Login</Link>
+                    <Link href="/auth/sign-up" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Sign Up</Link>
                 </nav>
 
                 {/* Actions: Theme Toggle & CTA */}
@@ -63,13 +65,13 @@ export default function Navbar() {
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
                 <div className="md:hidden backdrop-blur-md bg-white/90 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-6 py-6 space-y-4">
-                    <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Features</a>
-                    <a href="#comparison" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Comparison</a>
-                    <a href="#audience" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Workflows</a>
-                    <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Pricing</a>
-                    <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-md">
+                    <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Features</Link>
+                    <Link href="#comparison" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Comparison</Link>
+                    <Link href="#audience" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Workflows</Link>
+                    <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Pricing</Link>
+                    <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-md">
                         Start Free Trial
-                    </a>
+                    </Link>
                 </div>
             )}
         </header>
