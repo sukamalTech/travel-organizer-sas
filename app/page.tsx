@@ -5,9 +5,9 @@
 // import { ThemeSwitcher } from "@/components/theme-switcher";
 // import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
 // import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-// import { hasEnvVars } from "@/lib/utils";
-// import Link from "next/link";
-// import { Suspense } from "react";
+import { hasEnvVars } from "@/lib/utils";
+import Link from "next/link";
+import { Suspense } from "react";
 // import Hero from "@/components/landing-page/Hero";
 
 // export default function Home() {
@@ -50,8 +50,10 @@ import InteractiveWorkflowTabs from "@/components/landing-page/InteractiveWorkfl
 import PricingTiers from "@/components/landing-page/PricingTiers";
 import FAQSection from "@/components/landing-page/FAQSection";
 import Footer from "@/components/ui/Footer";
+import { createClient } from "@/lib/supabase/server";
 
-export default function DynamicExplorerLanding() {
+export default async function DynamicExplorerLanding() {
+
   return (
     <LandingPageWrapper>
       <Navbar />

@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { Compass, Sun, Moon, Menu } from "lucide-react";
+import Link from "next/link";
+import StartFree from "./StartFree";
 
 export default function Navbar() {
     const [darkMode, setDarkMode] = useState(true);
@@ -8,6 +10,7 @@ export default function Navbar() {
     const toggleTheme = () => {
         setDarkMode(!darkMode);
     };
+
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/75 border-b border-slate-200 dark:border-slate-800 transition-colors">
@@ -30,11 +33,11 @@ export default function Navbar() {
 
                 {/* Desktop Nav Links */}
                 <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600 dark:text-slate-300">
-                    <a href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</a>
-                    <a href="#comparison" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Comparison</a>
-                    <a href="#audience" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Workflows</a>
-                    <a href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</a>
-                    <a href="#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">FAQ</a>
+                    <Link href="#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Features</Link>
+                    <Link href="#comparison" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Comparison</Link>
+                    <Link href="#audience" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Workflows</Link>
+                    <Link href="#pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Pricing</Link>
+                    <Link href="#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">FAQ</Link>
                 </nav>
 
                 {/* Actions: Theme Toggle & CTA */}
@@ -46,12 +49,7 @@ export default function Navbar() {
                     >
                         {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                     </button>
-                    <a
-                        href="#pricing"
-                        className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-lg shadow-indigo-600/25 transition-all transform hover:-translate-y-0.5"
-                    >
-                        Start Free Trial
-                    </a>
+                    <StartFree />
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
