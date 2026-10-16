@@ -39,12 +39,12 @@ export function ThemeToggle() {
             {isDarkMode ? (
                 <>
                     <Sun className="h-4 w-4 text-amber-400" />
-                    <span>Light Mode</span>
+                    <span>L</span>
                 </>
             ) : (
                 <>
                     <Moon className="h-4 w-4 text-slate-600" />
-                    <span>Dark Mode</span>
+                    <span>D</span>
                 </>
             )}
         </button>

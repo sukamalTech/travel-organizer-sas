@@ -10,7 +10,7 @@ export default function Navbar() {
     const toggleTheme = () => {
         setDarkMode(!darkMode);
     };
-
+    const mobileMenuClassName = "block text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors";
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/75 border-b border-slate-200 dark:border-slate-800 transition-colors">
@@ -65,13 +65,16 @@ export default function Navbar() {
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
                 <div className="md:hidden backdrop-blur-md bg-white/90 dark:bg-slate-900/95 border-t border-slate-200 dark:border-slate-800 px-6 py-6 space-y-4">
-                    <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Features</Link>
-                    <Link href="#comparison" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Comparison</Link>
-                    <Link href="#audience" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Workflows</Link>
-                    <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-base font-medium text-slate-700 dark:text-slate-200">Pricing</Link>
-                    <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-md">
+                    <Link href="#features" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Features</Link>
+                    <Link href="#comparison" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Comparison</Link>
+                    <Link href="#audience" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Workflows</Link>
+                    <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Pricing</Link>
+                    <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Login</Link>
+                    <Link href="/auth/sign-up" onClick={() => setMobileMenuOpen(false)} className={`${mobileMenuClassName}`}>Sign Up</Link>
+                    {/* <Link href="#pricing" onClick={() => setMobileMenuOpen(false)} className="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-md">
                         Start Free Trial
-                    </Link>
+                    </Link> */}
+                    <StartFree />
                 </div>
             )}
         </header>

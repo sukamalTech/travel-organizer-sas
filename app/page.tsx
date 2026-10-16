@@ -50,7 +50,9 @@ import InteractiveWorkflowTabs from "@/components/landing-page/InteractiveWorkfl
 import PricingTiers from "@/components/landing-page/PricingTiers";
 import FAQSection from "@/components/landing-page/FAQSection";
 import Footer from "@/components/ui/Footer";
-import { createClient } from "@/lib/supabase/server";
+import { Hero } from "@/components/hero";
+import HeroExplorer from "@/components/hero/HeroExplorer";
+import TripWorkflowView from "@/components/dashboards/TripWorkflowView";
 
 export default async function DynamicExplorerLanding() {
 
@@ -65,6 +67,7 @@ export default async function DynamicExplorerLanding() {
       <PricingTiers />
       <FAQSection />
       <Footer />
+      {/* <TripWorkflowView /> */}
     </LandingPageWrapper>
   );
 }

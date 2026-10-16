@@ -79,10 +79,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { User, LayoutDashboard, Compass } from 'lucide-react'
-import { LogoutButton } from '@/components/logout-button'
-import { ThemeToggle } from '@/components/ThemeToggle' // <-- Import theme toggle
+
 import Header from '@/components/dashboards/mobileHeader'
 
 // Prevents Next.js 16 build error by allowing dynamic request execution during SSR

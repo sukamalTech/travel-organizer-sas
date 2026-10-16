@@ -28,16 +28,16 @@ export default function StartFree() {
             {userId ? (
                 <Link
                     href={`/${userId}`}
-                    className="px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 shadow-lg shadow-indigo-600/25"
+                    className="px-3 py-1.5 rounded-sm font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 shadow-lg shadow-indigo-600/25"
                 >
-                    Go to Dashboard
+                    Dashboard
                 </Link>
             ) : (
                 <Link
                     href="/auth/sign-up"
                     className="px-5 py-2.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-indigo-600 to-violet-600 shadow-lg shadow-indigo-600/25"
                 >
-                    Start Free Trial
+                    Start Free
                 </Link>
             )}
         </div>

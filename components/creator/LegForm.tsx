@@ -7,6 +7,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { TravelLegFormInput } from '@/lib/validations/itinerary';
 import LegRouteMap from '@/components/creator/LegRouteMap';
 import { Clock, Ruler, MapPin, Loader2, Ticket, Plane, Car } from 'lucide-react';
+import RichTextEditor from './RichTextEditor';
 
 interface LegFormProps {
     form: UseFormReturn<TravelLegFormInput>;
@@ -15,6 +16,7 @@ interface LegFormProps {
     selectedLegId?: string | null;
     defaultValues?: TravelLegFormInput;
     legDate: string; // e.g. "2026-10-12" (Fixed date for the current leg)
+
 }
 
 interface PlaceSuggestion {
@@ -442,7 +444,9 @@ export default function LegForm({
                                 className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200"
                             />
                         </div>
+
                     </div>
+
                 </div>
             )}
 
