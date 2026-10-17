@@ -303,7 +303,7 @@ export default function DesktopCreatorPortal({
         <div className="h-screen w-full flex flex-col bg-background font-sans overflow-hidden">
             {/* Top Navigation Header with Colorful Gradient Banner Feel */}
             <header className="h-16 bg-card/80 backdrop-blur-md border-b border-primary/20 px-4 md:px-6 flex items-center justify-between shadow-xs relative shrink-0">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 opacity-80" />
+                {/* <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-blue-500 opacity-80" /> */}
                 <div className="flex items-center gap-3">
                     <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-inner">
                         <Compass className="w-5 h-5 animate-spin-slow" />
