@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { itineraryItems } from "@/lib/constants/landingpageconstant";
 import Link from 'next/link';
-import HeroExplorer from '../hero/HeroExplorer';
+import HeroExplorer from './HeroExplorer';
 export default function HeroSection() {
     const [selectedPin, setSelectedPin] = useState(0);
     return (

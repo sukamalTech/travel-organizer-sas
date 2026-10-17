@@ -44,7 +44,7 @@ export default function OthersFormPanel({
                     value={formData.name || ''}
                     onChange={(e) => handleChange('name', e.target.value)}
                     placeholder={activeTab === 'accommodation' ? 'Hotel Name' : activeTab === 'attraction' ? 'Monument Name' : 'Restaurant Name'}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
 
@@ -100,7 +100,7 @@ export default function OthersFormPanel({
                             <select
                                 value={formData.status || 'Confirmed'}
                                 onChange={(e) => handleChange('status', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             >
                                 <option value="Confirmed">Confirmed</option>
                                 <option value="Budget">Budget</option>
@@ -119,7 +119,7 @@ export default function OthersFormPanel({
                                 placeholder="e.g. USD, EUR"
                                 value={formData.currency || ''}
                                 onChange={(e) => handleChange('currency', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -132,7 +132,7 @@ export default function OthersFormPanel({
                                 step="0.01"
                                 value={formData.estimatedCost || ''}
                                 onChange={(e) => handleChange('estimatedCost', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -142,7 +142,7 @@ export default function OthersFormPanel({
                                 step="0.01"
                                 value={formData.actualCost || ''}
                                 onChange={(e) => handleChange('actualCost', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -154,7 +154,7 @@ export default function OthersFormPanel({
                                 type="text"
                                 value={formData.phoneNumber || ''}
                                 onChange={(e) => handleChange('phoneNumber', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -163,7 +163,7 @@ export default function OthersFormPanel({
                                 type="text"
                                 value={formData.bookingReference || ''}
                                 onChange={(e) => handleChange('bookingReference', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -175,7 +175,7 @@ export default function OthersFormPanel({
                             placeholder="https://..."
                             value={formData.externalBookingUrl || ''}
                             onChange={(e) => handleChange('externalBookingUrl', e.target.value)}
-                            className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                            className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                         />
                     </div>
 
@@ -187,7 +187,7 @@ export default function OthersFormPanel({
                                 step="any"
                                 value={formData.latitude || ''}
                                 onChange={(e) => handleChange('latitude', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -197,7 +197,7 @@ export default function OthersFormPanel({
                                 step="any"
                                 value={formData.longitude || ''}
                                 onChange={(e) => handleChange('longitude', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -237,7 +237,7 @@ export default function OthersFormPanel({
                                 placeholder="e.g. USD, EUR"
                                 value={formData.currency || ''}
                                 onChange={(e) => handleChange('currency', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -247,7 +247,7 @@ export default function OthersFormPanel({
                                 step="0.01"
                                 value={formData.entryFee || ''}
                                 onChange={(e) => handleChange('entryFee', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -260,7 +260,7 @@ export default function OthersFormPanel({
                                 step="900"
                                 value={formData.openingTime || ''}
                                 onChange={(e) => handleChange('openingTime', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -270,7 +270,7 @@ export default function OthersFormPanel({
                                 step="900"
                                 value={formData.closingTime || ''}
                                 onChange={(e) => handleChange('closingTime', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -282,7 +282,7 @@ export default function OthersFormPanel({
                             step="0.1"
                             value={formData.distanceFromBaseKm || ''}
                             onChange={(e) => handleChange('distanceFromBaseKm', e.target.value)}
-                            className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                            className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                         />
                     </div>
 
@@ -295,7 +295,7 @@ export default function OthersFormPanel({
                                 placeholder="e.g. 28.6139"
                                 value={formData.latitude || ''}
                                 onChange={(e) => handleChange('latitude', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -306,7 +306,7 @@ export default function OthersFormPanel({
                                 placeholder="e.g. 77.2090"
                                 value={formData.longitude || ''}
                                 onChange={(e) => handleChange('longitude', e.target.value)}
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -318,7 +318,7 @@ export default function OthersFormPanel({
                             placeholder="e.g. Sunset view, Historic architecture, Guided tour"
                             value={Array.isArray(formData.highlights) ? formData.highlights.join(', ') : (formData.highlights || '')}
                             onChange={(e) => handleChange('highlights', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-                            className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                            className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                         />
                     </div>
 
@@ -329,7 +329,7 @@ export default function OthersFormPanel({
                             placeholder="e.g. Best light during golden hour, Tripod allowed"
                             value={Array.isArray(formData.photographyNotes) ? formData.photographyNotes.join(', ') : (formData.photographyNotes || '')}
                             onChange={(e) => handleChange('photographyNotes', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-                            className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl resize-none"
+                            className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl resize-none"
                         />
                     </div>
                 </>
@@ -370,7 +370,7 @@ export default function OthersFormPanel({
                                 value={formData.category || ''}
                                 onChange={(e) => handleChange('category', e.target.value)}
                                 placeholder="e.g. Restaurant, Cafe"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -380,7 +380,7 @@ export default function OthersFormPanel({
                                 value={formData.cuisineType || ''}
                                 onChange={(e) => handleChange('cuisineType', e.target.value)}
                                 placeholder="e.g. Local Bengali, Cafe"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -395,7 +395,7 @@ export default function OthersFormPanel({
                                 value={formData.estimatedCost || ''}
                                 onChange={(e) => handleChange('estimatedCost', e.target.value)}
                                 placeholder="e.g. 500"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -407,7 +407,7 @@ export default function OthersFormPanel({
                                 value={formData.rating || ''}
                                 onChange={(e) => handleChange('rating', e.target.value)}
                                 placeholder="e.g. 4.5"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -422,7 +422,7 @@ export default function OthersFormPanel({
                                 value={formData.latitude || ''}
                                 onChange={(e) => handleChange('latitude', e.target.value)}
                                 placeholder="e.g. 22.5726"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                         <div>
@@ -433,7 +433,7 @@ export default function OthersFormPanel({
                                 value={formData.longitude || ''}
                                 onChange={(e) => handleChange('longitude', e.target.value)}
                                 placeholder="e.g. 88.3639"
-                                className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                                className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                             />
                         </div>
                     </div>
@@ -447,7 +447,7 @@ export default function OthersFormPanel({
                     value={formData.address || ''}
                     onChange={(e) => handleChange('address', e.target.value)}
                     placeholder="Full street address"
-                    className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
+                    className="text-slate-900 dark:text-slate-100 w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl"
                 />
             </div>
 

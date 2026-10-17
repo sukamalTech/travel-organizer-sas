@@ -161,7 +161,7 @@ export default function Header({ userId }: { userId: string }) {
                         size="sm"
                         className="hidden sm:inline-flex gap-2 rounded-xl text-xs sm:text-sm font-semibold shadow-xs"
                     >
-                        <Link href={`/${userId}`}>
+                        <Link href={`/${userId}/view-trips`} className="flex items-center gap-2 rounded-xl text-xs sm:text-sm font-semibold shadow-xs">
                             <ScreenShare className="h-4 w-4" />
                             <span>View Trip</span>
                         </Link>

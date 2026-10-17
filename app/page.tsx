@@ -50,9 +50,9 @@ import InteractiveWorkflowTabs from "@/components/landing-page/InteractiveWorkfl
 import PricingTiers from "@/components/landing-page/PricingTiers";
 import FAQSection from "@/components/landing-page/FAQSection";
 import Footer from "@/components/ui/Footer";
-import { Hero } from "@/components/hero";
-import HeroExplorer from "@/components/hero/HeroExplorer";
+import HeroExplorer from "@/components/landing-page/HeroExplorer";
 import TripWorkflowView from "@/components/dashboards/TripWorkflowView";
+import TripWorkflowHero from "@/components/landing-page/TripWorkflowHero";
 
 export default async function DynamicExplorerLanding() {
 
@@ -61,13 +61,14 @@ export default async function DynamicExplorerLanding() {
       <Navbar />
       <HeroSection />
       <SocialProofSection />
+      <TripWorkflowHero />
       <ProblemAgitationMatrix />
       <CoreFeatureGrid />
       <InteractiveWorkflowTabs />
       <PricingTiers />
       <FAQSection />
       <Footer />
-      {/* <TripWorkflowView /> */}
+      <TripWorkflowView />
     </LandingPageWrapper>
   );
 }
