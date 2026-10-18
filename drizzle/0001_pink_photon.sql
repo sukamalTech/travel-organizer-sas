@@ -1,0 +1,1 @@
+ALTER TABLE `attractions` ADD `distance_from_base_km` decimal(8,2);

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1792337224472,
+      "tag": "0000_violet_proteus",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1792338838623,
+      "tag": "0001_pink_photon",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1792341064805,
+      "tag": "0002_tense_leo",
+      "breakpoints": true
+    }
+  ]
+}

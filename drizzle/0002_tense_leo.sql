@@ -1,0 +1,1 @@
+ALTER TABLE `attractions` DROP COLUMN `distance_from_base_km`;
