@@ -142,6 +142,13 @@ export default async function UserDashboard({
                         </Link>
                     </CardContent>
                 </Card>
+                <Link
+                    href={`/${id}/documents`}
+                    className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                >
+                    <span>Documents</span>
+                    <ArrowRight className="h-4 w-4" />
+                </Link>
             </div>
         </div>
     )

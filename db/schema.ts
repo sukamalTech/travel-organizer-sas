@@ -177,3 +177,17 @@ export const attractions = mysqlTable("attractions", {
 
 export type Attraction = typeof attractions.$inferSelect;
 export type NewAttraction = typeof attractions.$inferInsert;
+
+// db/schema.ts
+
+export const documents = mysqlTable("documents", {
+  id: varchar("id", { length: 36 }).primaryKey(), // UUID or cuid
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileKey: varchar("file_key", { length: 255 }).notNull(), // Required to delete from Uploadthing
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type Document = typeof documents.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;

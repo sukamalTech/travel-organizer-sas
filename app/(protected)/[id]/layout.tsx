@@ -1,4 +1,5 @@
 
+export const instant = false
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -6,7 +7,6 @@ import { redirect } from 'next/navigation'
 import Header from '@/components/dashboards/mobileHeader'
 
 // Prevents Next.js 16 build error by allowing dynamic request execution during SSR
-export const instant = false
 
 export default async function ProtectedLayout({
     children,
