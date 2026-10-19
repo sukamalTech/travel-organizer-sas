@@ -105,7 +105,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '../ThemeToggle'; // Adjust path if needed
 import { Suspense } from 'react';
-import { LogoutButton } from '../logout-button';
+import { LogoutButton } from '../auth-component/logout-button';
 
 export default function Header({ userId }: { userId: string }) {
     const navLinks = [

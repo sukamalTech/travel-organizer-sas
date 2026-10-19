@@ -19,7 +19,7 @@ import {
     ChevronDown,
     ChevronUp
 } from "lucide-react";
-import { DayRouteOptimizer } from "./DayRouteOptimizer";
+import { DayRouteOptimizer } from "@/components/view/route-optimize/DayRouteOptimizer";
 
 function getModeStyle(mode: string = '') {
     switch (mode.toLowerCase()) {

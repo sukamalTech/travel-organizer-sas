@@ -104,7 +104,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Hotel, Utensils, Landmark } from "lucide-react";
 import { MapNavigatorButton } from "@/components/view/MapNavigatorButton";
-import { DayRouteOptimizer } from "@/components/view/DayRouteOptimizer";
+import { DayRouteOptimizer } from "@/components/view/route-optimize/DayRouteOptimizer";
 
 interface OtherDetailsTabProps {
     selectedDayId: string | null;
