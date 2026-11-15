@@ -1,6 +1,7 @@
 import { Geist } from "next/font/google";
 // import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import 'leaflet/dist/leaflet.css';
 import { ThemeProvider } from "@/components/themeprovider";
 import type { Metadata, Viewport } from "next";
 
