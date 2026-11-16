@@ -19,7 +19,6 @@ async function getAuthenticatedUserId() {
   return user.id;
 }
 
-// Helper: Normalize Indian 10-digit numbers to +91
 function normalizePhoneNumber(rawPhone: string): string {
   const cleaned = rawPhone.replace(/[\s\-()]/g, "");
   if (/^\d{10}$/.test(cleaned)) {
@@ -28,11 +27,10 @@ function normalizePhoneNumber(rawPhone: string): string {
   return cleaned;
 }
 
-// 1. Ensure default tags exist for the user, then fetch all tags with contact counts
+// 1. Fetch all tags with contact counts (seeding defaults on first run)
 export async function getUserTagsWithCounts() {
   const userId = await getAuthenticatedUserId();
 
-  // Seed default tags if user has zero tags yet
   const existingTags = await db
     .select({ id: contactTags.id })
     .from(contactTags)
@@ -54,8 +52,7 @@ export async function getUserTagsWithCounts() {
       );
   }
 
-  // Fetch all tags with contact count using LEFT JOIN
-  const rows = await db
+  return await db
     .select({
       id: contactTags.id,
       name: contactTags.name,
@@ -67,31 +64,28 @@ export async function getUserTagsWithCounts() {
     .where(eq(contactTags.userId, userId))
     .groupBy(contactTags.id, contactTags.name, contactTags.isDefault)
     .orderBy(desc(contactTags.isDefault), asc(contactTags.name));
-
-  return rows;
 }
 
-// 2. Create a custom tag (e.g., "DFPD Officials", "DCFS", "SCFS")
+// 2. Create a custom tag
 export async function createCustomTag(tagName: string) {
   const userId = await getAuthenticatedUserId();
   const trimmedName = tagName.trim();
 
-  if (!trimmedName) {
-    throw new Error("Tag name cannot be empty");
-  }
+  if (!trimmedName) throw new Error("Tag name cannot be empty");
 
-  // Return existing tag if user already created one with the same name
   const existing = await db
-    .select({ id: contactTags.id, name: contactTags.name })
+    .select({
+      id: contactTags.id,
+      name: contactTags.name,
+      is_default: contactTags.isDefault,
+    })
     .from(contactTags)
     .where(
       and(eq(contactTags.userId, userId), eq(contactTags.name, trimmedName)),
     )
     .limit(1);
 
-  if (existing.length > 0) {
-    return existing[0];
-  }
+  if (existing.length > 0) return existing[0];
 
   const tagId = globalThis.crypto.randomUUID();
   await db.insert(contactTags).values({
@@ -101,15 +95,59 @@ export async function createCustomTag(tagName: string) {
     isDefault: false,
   });
 
-  return { id: tagId, name: trimmedName };
+  return { id: tagId, name: trimmedName, is_default: false };
 }
 
-// 3. Save a new contact with multiple tags inside a Drizzle transaction
+// 3. Rename a custom tag (default tags are protected)
+export async function renameCustomTag(tagId: string, newName: string) {
+  const userId = await getAuthenticatedUserId();
+  const trimmed = newName.trim();
+  if (!trimmed) throw new Error("Tag name cannot be empty");
+
+  const tag = await db
+    .select({ id: contactTags.id, isDefault: contactTags.isDefault })
+    .from(contactTags)
+    .where(and(eq(contactTags.id, tagId), eq(contactTags.userId, userId)))
+    .limit(1);
+
+  if (tag.length === 0) throw new Error("Tag not found");
+  if (tag[0].isDefault) throw new Error("Default tags cannot be renamed");
+
+  await db
+    .update(contactTags)
+    .set({ name: trimmed })
+    .where(and(eq(contactTags.id, tagId), eq(contactTags.userId, userId)));
+
+  return { success: true, id: tagId, name: trimmed };
+}
+
+// 4. Delete a custom tag (default tags are protected)
+export async function deleteCustomTag(tagId: string) {
+  const userId = await getAuthenticatedUserId();
+
+  const tag = await db
+    .select({ id: contactTags.id, isDefault: contactTags.isDefault })
+    .from(contactTags)
+    .where(and(eq(contactTags.id, tagId), eq(contactTags.userId, userId)))
+    .limit(1);
+
+  if (tag.length === 0) throw new Error("Tag not found");
+  if (tag[0].isDefault) throw new Error("Default tags cannot be deleted");
+
+  await db
+    .delete(contactTags)
+    .where(and(eq(contactTags.id, tagId), eq(contactTags.userId, userId)));
+
+  return { success: true };
+}
+
+// 5. Save a new contact (TiDB HTTP-driver safe)
 export async function saveContactWithTags(data: {
   name: string;
   phone: string;
   tagIds: string[];
   notes?: string;
+  isFrequent?: boolean;
 }) {
   const userId = await getAuthenticatedUserId();
 
@@ -117,94 +155,106 @@ export async function saveContactWithTags(data: {
     throw new Error("Select at least one tag");
   }
 
+  const validTags = await db
+    .select({ id: contactTags.id })
+    .from(contactTags)
+    .where(
+      and(eq(contactTags.userId, userId), inArray(contactTags.id, data.tagIds)),
+    );
+
+  if (validTags.length === 0) {
+    throw new Error("No valid tags selected");
+  }
+
   const contactId = globalThis.crypto.randomUUID();
   const cleanPhone = normalizePhoneNumber(data.phone);
 
-  await db.transaction(async (tx) => {
-    // Insert contact
-    await tx.insert(userContacts).values({
-      id: contactId,
-      userId,
-      name: data.name.trim(),
-      phoneNumber: cleanPhone,
-      notes: data.notes?.trim() || null,
-    });
-
-    // Verify submitted tagIds belong to this user
-    const validTags = await tx
-      .select({ id: contactTags.id })
-      .from(contactTags)
-      .where(
-        and(
-          eq(contactTags.userId, userId),
-          inArray(contactTags.id, data.tagIds),
-        ),
-      );
-
-    if (validTags.length === 0) {
-      throw new Error("No valid tags selected");
-    }
-
-    // Batch insert tag mappings
-    await tx.insert(contactTagMap).values(
-      validTags.map((tag) => ({
-        contactId,
-        tagId: tag.id,
-      })),
-    );
+  await db.insert(userContacts).values({
+    id: contactId,
+    userId,
+    name: data.name.trim(),
+    phoneNumber: cleanPhone,
+    notes: data.notes?.trim() || null,
+    isFrequent: Boolean(data.isFrequent),
   });
 
-  return { success: true, contactId };
+  await db.insert(contactTagMap).values(
+    validTags.map((tag) => ({
+      contactId,
+      tagId: tag.id,
+    })),
+  );
+
+  return { success: true, contactId, phone_number: cleanPhone };
 }
 
-// 4. Update tags on an existing contact
-export async function updateContactTags(
+// 6. Update an existing contact (TiDB HTTP-driver safe)
+export async function updateContact(
   contactId: string,
-  newTagIds: string[],
+  data: {
+    name: string;
+    phone: string;
+    tagIds: string[];
+    notes?: string;
+    isFrequent?: boolean;
+  },
 ) {
   const userId = await getAuthenticatedUserId();
 
-  if (!newTagIds || newTagIds.length === 0) {
+  if (!data.tagIds || data.tagIds.length === 0) {
     throw new Error("Contact must have at least one tag");
   }
 
-  // Verify ownership of the contact
-  const contact = await db
+  const existing = await db
     .select({ id: userContacts.id })
     .from(userContacts)
     .where(and(eq(userContacts.id, contactId), eq(userContacts.userId, userId)))
     .limit(1);
 
-  if (contact.length === 0) {
+  if (existing.length === 0) {
     throw new Error("Contact not found");
   }
 
-  await db.transaction(async (tx) => {
-    await tx
-      .delete(contactTagMap)
-      .where(eq(contactTagMap.contactId, contactId));
+  const validTags = await db
+    .select({ id: contactTags.id })
+    .from(contactTags)
+    .where(
+      and(eq(contactTags.userId, userId), inArray(contactTags.id, data.tagIds)),
+    );
 
-    const validTags = await tx
-      .select({ id: contactTags.id })
-      .from(contactTags)
-      .where(
-        and(eq(contactTags.userId, userId), inArray(contactTags.id, newTagIds)),
-      );
+  if (validTags.length === 0) {
+    throw new Error("No valid tags selected");
+  }
 
-    if (validTags.length > 0) {
-      await tx.insert(contactTagMap).values(
-        validTags.map((tag) => ({
-          contactId,
-          tagId: tag.id,
-        })),
-      );
-    }
-  });
+  const cleanPhone = normalizePhoneNumber(data.phone);
 
-  return { success: true };
+  // Update contact details
+  await db
+    .update(userContacts)
+    .set({
+      name: data.name.trim(),
+      phoneNumber: cleanPhone,
+      notes: data.notes?.trim() || null,
+      isFrequent: Boolean(data.isFrequent),
+    })
+    .where(
+      and(eq(userContacts.id, contactId), eq(userContacts.userId, userId)),
+    );
+
+  // Replace tag mappings
+  await db.delete(contactTagMap).where(eq(contactTagMap.contactId, contactId));
+
+  await db.insert(contactTagMap).values(
+    validTags.map((tag) => ({
+      contactId,
+      tagId: tag.id,
+    })),
+  );
+
+  return { success: true, phone_number: cleanPhone };
 }
 
-// 5. Fetch contacts with all their assigned tags attached
+// 7. Fetch all contacts with their assigned tags
 export async function getMultiTagContacts(
   filterTagId?: string,
   searchQuery?: string,
@@ -213,7 +263,6 @@ export async function getMultiTagContacts(
 
   const conditions = [eq(userContacts.userId, userId)];
 
-  // Filter by specific tag while preserving all tags on matching contacts
   if (filterTagId && filterTagId !== "ALL") {
     conditions.push(
       inArray(
@@ -226,7 +275,6 @@ export async function getMultiTagContacts(
     );
   }
 
-  // Optional search filter across name, phone number, and notes
   if (searchQuery && searchQuery.trim() !== "") {
     const term = `%${searchQuery.trim()}%`;
     conditions.push(
@@ -244,6 +292,7 @@ export async function getMultiTagContacts(
       name: userContacts.name,
       phone_number: userContacts.phoneNumber,
       notes: userContacts.notes,
+      is_frequent: userContacts.isFrequent,
       tags: sql<{ id: string; name: string }[]>`JSON_ARRAYAGG(
         JSON_OBJECT('id', ${contactTags.id}, 'name', ${contactTags.name})
       )`,
@@ -257,13 +306,18 @@ export async function getMultiTagContacts(
       userContacts.name,
       userContacts.phoneNumber,
       userContacts.notes,
+      userContacts.isFrequent,
     )
     .orderBy(asc(userContacts.name));
 
-  return rows;
+  return rows.map((row) => ({
+    ...row,
+    is_frequent: Boolean(row.is_frequent),
+    tags: typeof row.tags === "string" ? JSON.parse(row.tags) : row.tags,
+  }));
 }
 
-// 6. Delete a contact
+// 8. Delete a contact
 export async function deleteContact(contactId: string) {
   const userId = await getAuthenticatedUserId();
 

@@ -1,4 +1,4 @@
-// lib/offlineContactsDB.ts
+// lib/indexdb/offlineContactsDB.ts
 export type TagItem = {
   id: string;
   name: string;
@@ -11,6 +11,7 @@ export type ContactItem = {
   name: string;
   phone_number: string;
   notes?: string | null;
+  is_frequent: boolean;
   tags: { id: string; name: string }[];
 };
 
@@ -37,7 +38,6 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-// Save fresh server data into IndexedDB
 export async function cacheContactsData(
   tags: TagItem[],
   contacts: ContactItem[],
@@ -45,7 +45,6 @@ export async function cacheContactsData(
   try {
     const db = await openDB();
     const tx = db.transaction(["tags", "contacts"], "readwrite");
-
     const tagStore = tx.objectStore("tags");
     const contactStore = tx.objectStore("contacts");
 
@@ -64,7 +63,6 @@ export async function cacheContactsData(
   }
 }
 
-// Read cached tags and contacts when offline or before network responds
 export async function getOfflineContactsData(): Promise<{
   tags: TagItem[];
   contacts: ContactItem[];
@@ -72,7 +70,6 @@ export async function getOfflineContactsData(): Promise<{
   try {
     const db = await openDB();
     const tx = db.transaction(["tags", "contacts"], "readonly");
-
     const tagsReq = tx.objectStore("tags").getAll();
     const contactsReq = tx.objectStore("contacts").getAll();
 

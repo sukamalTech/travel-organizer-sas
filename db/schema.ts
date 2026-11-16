@@ -103,7 +103,6 @@ export const documents = mysqlTable("documents", {
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
 
-// 1. Contact Tags Table (Default + User-Created Custom Tags)
 export const contactTags = mysqlTable(
   "contact_tags",
   {
@@ -119,7 +118,6 @@ export const contactTags = mysqlTable(
   ],
 );
 
-// 2. User Contacts Table
 export const userContacts = mysqlTable(
   "user_contacts",
   {
@@ -128,13 +126,13 @@ export const userContacts = mysqlTable(
     name: varchar("name", { length: 255 }).notNull(),
     phoneNumber: varchar("phone_number", { length: 20 }).notNull(),
     notes: varchar("notes", { length: 255 }),
+    isFrequent: boolean("is_frequent").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
   },
   (table) => [index("idx_user_contacts").on(table.userId)],
 );
 
-// 3. Many-to-Many Junction Table (Links one contact to multiple tags)
 export const contactTagMap = mysqlTable(
   "contact_tag_map",
   {

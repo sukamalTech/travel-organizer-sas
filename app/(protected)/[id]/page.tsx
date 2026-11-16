@@ -142,6 +142,26 @@ export default async function UserDashboard({
                         </Link>
                     </CardContent>
                 </Card>
+                <Card className="hover:border-slate-400 transition-all">
+                    <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                            <span>Contacts</span>
+                            <User className="h-5 w-5 text-slate-500" />
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="text-sm text-slate-500">
+                            Manage your user contacts.
+                        </p>
+                        <Link
+                            href={`/${id}/contacts`}
+                            className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                        >
+                            <span>View</span>
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </CardContent>
+                </Card>
                 <Link
                     href={`/${id}/documents`}
                     className="inline-flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
