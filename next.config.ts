@@ -39,7 +39,8 @@ const withPWA = withPWAInit({
         // Cache visited protected contact & travel pages for offline access
         urlPattern: ({ request, url }) =>
           request.mode === "navigate" &&
-          (url.pathname.includes("/contacts") ||
+          (url.pathname === "/" ||
+            url.pathname.includes("/contacts") ||
             url.pathname.includes("/plans")),
         handler: "NetworkFirst",
         options: {

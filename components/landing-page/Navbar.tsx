@@ -3,15 +3,19 @@ import { useState } from "react";
 import { Compass, Sun, Moon, Menu } from "lucide-react";
 import Link from "next/link";
 import StartFree from "./StartFree";
+import { useTheme } from "next-themes";
 
 export default function Navbar() {
     const [darkMode, setDarkMode] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const toggleTheme = () => {
-        setDarkMode(!darkMode);
-    };
+    // const toggleTheme = () => {
+    //     setDarkMode(!darkMode);
+    // };
     const mobileMenuClassName = "block text-base font-medium text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors";
-
+    const { resolvedTheme, setTheme } = useTheme();
+    const toggleTheme = () => {
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    };
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/75 border-b border-slate-200 dark:border-slate-800 transition-colors">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
