@@ -12,6 +12,7 @@ import {
   boolean,
   index,
   uniqueIndex,
+  double,
 } from "drizzle-orm/mysql-core";
 
 export const usersTable = mysqlTable("users_table", {
@@ -23,6 +24,79 @@ export const usersTable = mysqlTable("users_table", {
 
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
+
+export type TravelMode =
+  | "car"
+  | "bike"
+  | "train"
+  | "bus"
+  | "flight"
+  | "ferry"
+  | "walk";
+
+export type RoadCondition = "smooth" | "patchy" | "gravel" | "severe";
+
+export interface TravelLegMetadata {
+  // Car / Bike
+  highway_number?: string;
+  road_condition?: RoadCondition;
+
+  // Train / Bus / Ferry
+  train_name?: string;
+  train_number?: string;
+  pnr?: string;
+  seat_number?: string;
+  departure_platform?: string;
+  fare?: number | string;
+
+  // Flight
+  airline?: string;
+  flight_number?: string;
+  terminal?: string;
+  seat?: string;
+
+  [key: string]: unknown;
+}
+
+export const travelLegs = mysqlTable(
+  "travel_legs",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    tripId: varchar("trip_id", { length: 36 }).notNull(),
+    dayId: varchar("day_id", { length: 36 }).notNull(),
+
+    mode: varchar("mode", { length: 20 })
+      .$type<TravelMode>()
+      .notNull()
+      .default("car"),
+
+    originName: varchar("origin_name", { length: 255 }).notNull(),
+    originLat: decimal("origin_lat", { precision: 11, scale: 8 }),
+    originLng: decimal("origin_lng", { precision: 11, scale: 8 }),
+
+    destinationName: varchar("destination_name", { length: 255 }).notNull(),
+    destinationLat: decimal("destination_lat", { precision: 11, scale: 8 }),
+    destinationLng: decimal("destination_lng", { precision: 11, scale: 8 }),
+
+    departureTime: time("departure_time"),
+    arrivalTime: time("arrival_time"),
+
+    distanceKm: double("distance_km"),
+    sequenceOrder: int("sequence_order").notNull().default(1),
+
+    metadata: json("metadata").$type<TravelLegMetadata>().notNull().default({}),
+  },
+  (table) => ({
+    tripIdx: index("idx_travel_legs_trip_id").on(table.tripId),
+    daySeqIdx: index("idx_travel_legs_day_seq").on(
+      table.dayId,
+      table.sequenceOrder,
+    ),
+  }),
+);
+
+export type TravelLegRecord = typeof travelLegs.$inferSelect;
+export type NewTravelLegRecord = typeof travelLegs.$inferInsert;
 
 // Accomodation schema
 export const accommodations = mysqlTable("accommodations", {
@@ -146,5 +220,31 @@ export const contactTagMap = mysqlTable(
   (table) => [
     primaryKey({ columns: [table.contactId, table.tagId] }),
     index("idx_tag_lookup").on(table.tagId, table.contactId),
+  ],
+);
+
+// Add to db/schema.ts
+
+export const itineraryDays = mysqlTable(
+  "itinerary_days",
+  {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    tripId: varchar("trip_id", { length: 36 }).notNull(),
+    dayNumber: int("day_number").notNull(),
+    date: varchar("date", { length: 20 }).notNull(),
+    summary: text("summary"),
+    dailyNotes: text("daily_notes"),
+    nightStayLocation: varchar("night_stay_location", { length: 255 }),
+    nightStayNotes: text("night_stay_notes"),
+    dayMetadata: json("day_metadata").$type<{
+      stays?: any[];
+      dining?: any[];
+      attractions?: any[];
+      [key: string]: any;
+    }>(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_itinerary_days_trip_id").on(table.tripId, table.dayNumber),
   ],
 );

@@ -99,7 +99,7 @@ export default async function ProtectedLayout({
             <Header userId={activeUserId} />
 
             {/* Main Container */}
-            <main className="container mx-auto max-w-5xl py-8 px-4">{children}</main>
+            <main className="container  max-w-full py-8 px-4">{children}</main>
         </div>
     );
 }
