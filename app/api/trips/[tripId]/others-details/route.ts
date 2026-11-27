@@ -1,6 +1,11 @@
 // import { NextRequest, NextResponse } from "next/server";
-// import { db } from "@/db"; // Adjust path to your Drizzle DB client instance
-// import { accommodations, diningSpots, attractions } from "@/db/schema"; // Adjust path to your schema file
+// import { db } from "@/db";
+// import {
+//   accommodations,
+//   diningSpots,
+//   attractions,
+//   travelLegs,
+// } from "@/db/schema";
 // import { eq } from "drizzle-orm";
 // import crypto from "crypto";
 
@@ -23,15 +28,19 @@
 //       .from(attractions)
 //       .where(eq(attractions.tripId, tripId));
 
-//     const tripDining = await db
+//     const tripDinings = await db
 //       .select()
 //       .from(diningSpots)
 //       .where(eq(diningSpots.tripId, tripId));
-
+//     const tripLegs = await db
+//       .select()
+//       .from(travelLegs)
+//       .where(eq(travelLegs.tripId, tripId));
 //     return NextResponse.json({
 //       accommodations: tripAccommodations,
 //       attractions: tripAttractions,
-//       diningSpots: tripDining,
+//       travelLegs: tripLegs,
+//       diningSpots: tripDinings,
 //     });
 //   } catch (error: any) {
 //     console.error("Error fetching others-details:", error);
@@ -61,6 +70,8 @@
 //         tripId,
 //         dayId: data.dayId || null,
 //         name: data.name,
+//         placeName: data.placeName || null, // Added
+//         facilities: data.facilities || [], // Added
 //         status: data.status || "Confirmed",
 //         latitude: data.latitude ? String(data.latitude) : null,
 //         longitude: data.longitude ? String(data.longitude) : null,
@@ -84,9 +95,7 @@
 //         tripId,
 //         dayId: data.dayId || null,
 //         name: data.name,
-//         distanceFromBaseKm: data.distanceFromBaseKm
-//           ? String(data.distanceFromBaseKm)
-//           : null,
+//         address: data.address || null, // Added
 //         latitude: data.latitude ? String(data.latitude) : null,
 //         longitude: data.longitude ? String(data.longitude) : null,
 //         entryFee: data.entryFee ? String(data.entryFee) : null,
@@ -94,7 +103,7 @@
 //         openingTime: data.openingTime || null,
 //         closingTime: data.closingTime || null,
 //         highlights: data.highlights || [],
-//         photographyNotes: data.photographyNotes || {},
+//         photographyNotes: data.photographyNotes || [],
 //       });
 //     } else if (type === "dining") {
 //       await db.insert(diningSpots).values({
@@ -109,6 +118,73 @@
 //         address: data.address || null,
 //         estimatedCost: data.estimatedCost ? String(data.estimatedCost) : null,
 //         rating: data.rating ? String(data.rating) : null,
+//       });
+//     } else if (type === "leg") {
+//       // await db.insert(travelLegs).values({
+//       //   id,
+//       //   tripId,
+//       //   dayId: data.dayId || null,
+//       //   mode: data.mode || null,
+//       //   originName: data.originName,
+//       //   originLat: data.originLat ? String(data.latitude) : null,
+//       //   originLng: data.originLng ? String(data.latitude) : null,
+//       //   destinationName: data.destinationName,
+//       //   destinationLat: data.destinationLat ? String(data.latitude) : null,
+//       //   destinationLng: data.destinationLng ? String(data.latitude) : null,
+
+//       //   departureTime: data.departureTime || null,
+//       //   arrivalTime: data.arrivalTime || null,
+
+//       //   distanceKm: data.distanceKm,
+//       //   sequenceOrder: data.sequenceOrder || null,
+
+//       //   metadata: data.metadata || null,
+//       // });
+
+//       const toNullableDecimal = (val: unknown): string | null => {
+//         if (
+//           val === null ||
+//           val === undefined ||
+//           val === "" ||
+//           val === "undefined"
+//         ) {
+//           return null;
+//         }
+//         const num = typeof val === "number" ? val : Number(val);
+//         return Number.isFinite(num) ? num.toFixed(8) : null;
+//       };
+
+//       await db.insert(travelLegs).values({
+//         id,
+//         tripId,
+//         dayId: data.dayId,
+//         mode: data.mode || "car",
+//         originName: String(data.originName ?? "").trim(),
+//         originLat: toNullableDecimal(data.originLat),
+//         originLng: toNullableDecimal(data.originLng),
+//         destinationName: String(data.destinationName ?? "").trim(),
+//         destinationLat: toNullableDecimal(data.destinationLat),
+//         destinationLng: toNullableDecimal(data.destinationLng),
+//         departureTime:
+//           data.departureTime && data.departureTime !== "undefined"
+//             ? data.departureTime
+//             : null,
+//         arrivalTime:
+//           data.arrivalTime && data.arrivalTime !== "undefined"
+//             ? data.arrivalTime
+//             : null,
+//         distanceKm:
+//           data.distanceKm !== undefined &&
+//           data.distanceKm !== null &&
+//           data.distanceKm !== "" &&
+//           Number.isFinite(Number(data.distanceKm))
+//             ? Number(data.distanceKm)
+//             : null,
+//         sequenceOrder: Number(data.sequenceOrder) || 1,
+//         metadata:
+//           data.metadata && typeof data.metadata === "object"
+//             ? data.metadata
+//             : {},
 //       });
 //     } else {
 //       return NextResponse.json(
@@ -148,6 +224,8 @@
 //         .update(accommodations)
 //         .set({
 //           name: data.name,
+//           placeName: data.placeName || null,
+//           facilities: data.facilities || [],
 //           status: data.status,
 //           dayId: data.dayId || null,
 //           address: data.address || null,
@@ -166,6 +244,11 @@
 //             : null,
 //           estimatedCost: data.estimatedCost ? String(data.estimatedCost) : null,
 //           actualCost: data.actualCost ? String(data.actualCost) : null,
+//           currency: data.currency || "INR",
+//           bookingReference: data.bookingReference || null,
+//           externalBookingUrl: data.externalBookingUrl || null,
+//           latitude: data.latitude ? String(data.latitude) : null,
+//           longitude: data.longitude ? String(data.longitude) : null,
 //         })
 //         .where(eq(accommodations.id, id));
 //     } else if (type === "attraction") {
@@ -174,12 +257,15 @@
 //         .set({
 //           name: data.name,
 //           dayId: data.dayId || null,
-//           distanceFromBaseKm: data.distanceFromBaseKm
-//             ? String(data.distanceFromBaseKm)
-//             : null,
+//           address: data.address || null,
 //           entryFee: data.entryFee ? String(data.entryFee) : null,
+//           currency: data.currency || "INR",
 //           openingTime: data.openingTime || null,
 //           closingTime: data.closingTime || null,
+//           latitude: data.latitude ? String(data.latitude) : null,
+//           longitude: data.longitude ? String(data.longitude) : null,
+//           highlights: data.highlights || [],
+//           photographyNotes: data.photographyNotes || [],
 //         })
 //         .where(eq(attractions.id, id));
 //     } else if (type === "dining") {
@@ -193,8 +279,29 @@
 //           address: data.address || null,
 //           estimatedCost: data.estimatedCost ? String(data.estimatedCost) : null,
 //           rating: data.rating ? String(data.rating) : null,
+//           latitude: data.latitude ? String(data.latitude) : null,
+//           longitude: data.longitude ? String(data.longitude) : null,
 //         })
 //         .where(eq(diningSpots.id, id));
+//     } else if (type === "leg") {
+//       await db
+//         .update(travelLegs)
+//         .set({
+//           dayId: data.dayId || null,
+//           mode: data.mode || null,
+//           originName: data.originName,
+//           originLat: data.originLat ? String(data.latitude) : null,
+//           originLng: data.originLng ? String(data.latitude) : null,
+//           destinationName: data.destinationName,
+//           destinationLat: data.destinationLat ? String(data.latitude) : null,
+//           destinationLng: data.destinationLng ? String(data.latitude) : null,
+//           departureTime: data.departureTime || null,
+//           arrivalTime: data.arrivalTime || null,
+//           distanceKm: data.distanceKm,
+//           sequenceOrder: data.sequenceOrder || null,
+//           metadata: data.metadata || null,
+//         })
+//         .where(eq(travelLegs.id, id));
 //     }
 
 //     return NextResponse.json({ success: true });
@@ -227,6 +334,8 @@
 //       await db.delete(attractions).where(eq(attractions.id, id));
 //     } else if (type === "dining") {
 //       await db.delete(diningSpots).where(eq(diningSpots.id, id));
+//     } else if (type === "leg") {
+//       await db.delete(travelLegs).where(eq(travelLegs.id, id));
 //     }
 
 //     return NextResponse.json({ success: true });
@@ -240,39 +349,86 @@
 // }
 
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db"; // Adjust path to your Drizzle DB client instance
-import { accommodations, diningSpots, attractions } from "@/db/schema"; // Adjust path to your schema file
-import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import {
+  accommodations,
+  diningSpots,
+  attractions,
+  travelLegs,
+} from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import crypto from "crypto";
 
-// GET: Fetch all accommodations, attractions, and dining spots for a given trip
+const toNullableDecimal = (val: unknown): string | null => {
+  if (val === null || val === undefined || val === "" || val === "undefined") {
+    return null;
+  }
+  const num = typeof val === "number" ? val : Number(val);
+  return Number.isFinite(num) ? num.toFixed(8) : null;
+};
+
+const toNullableNumber = (val: unknown): number | null => {
+  if (val === null || val === undefined || val === "" || val === "undefined") {
+    return null;
+  }
+  const num = typeof val === "number" ? val : Number(val);
+  return Number.isFinite(num) ? num : null;
+};
+
+// GET: Fetch all accommodations, attractions, dining spots, and travel legs for a trip
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ tripId: string }> },
 ) {
   try {
-    const resolvedParams = await params;
-    const tripId = resolvedParams.tripId;
+    const { tripId } = await params;
+    const { searchParams } = new URL(request.url);
+    const dayId = searchParams.get("dayId");
 
     const tripAccommodations = await db
       .select()
       .from(accommodations)
-      .where(eq(accommodations.tripId, tripId));
+      .where(
+        dayId
+          ? and(
+              eq(accommodations.tripId, tripId),
+              eq(accommodations.dayId, dayId),
+            )
+          : eq(accommodations.tripId, tripId),
+      );
 
     const tripAttractions = await db
       .select()
       .from(attractions)
-      .where(eq(attractions.tripId, tripId));
+      .where(
+        dayId
+          ? and(eq(attractions.tripId, tripId), eq(attractions.dayId, dayId))
+          : eq(attractions.tripId, tripId),
+      );
 
-    const tripDining = await db
+    const tripDinings = await db
       .select()
       .from(diningSpots)
-      .where(eq(diningSpots.tripId, tripId));
+      .where(
+        dayId
+          ? and(eq(diningSpots.tripId, tripId), eq(diningSpots.dayId, dayId))
+          : eq(diningSpots.tripId, tripId),
+      );
+
+    const tripLegs = await db
+      .select()
+      .from(travelLegs)
+      .where(
+        dayId
+          ? and(eq(travelLegs.tripId, tripId), eq(travelLegs.dayId, dayId))
+          : eq(travelLegs.tripId, tripId),
+      );
 
     return NextResponse.json({
       accommodations: tripAccommodations,
       attractions: tripAttractions,
-      diningSpots: tripDining,
+      travelLegs: tripLegs,
+      diningSpots: tripDinings,
     });
   } catch (error: any) {
     console.error("Error fetching others-details:", error);
@@ -283,14 +439,13 @@ export async function GET(
   }
 }
 
-// POST: Create a new accommodation, attraction, or dining spot in TiDB
+// POST: Create a new accommodation, attraction, dining spot, or travel leg in TiDB
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ tripId: string }> },
 ) {
   try {
-    const resolvedParams = await params;
-    const tripId = resolvedParams.tripId;
+    const { tripId } = await params;
     const body = await request.json();
     const { type, ...data } = body;
 
@@ -302,11 +457,11 @@ export async function POST(
         tripId,
         dayId: data.dayId || null,
         name: data.name,
-        placeName: data.placeName || null, // Added
-        facilities: data.facilities || [], // Added
+        placeName: data.placeName || null,
+        facilities: data.facilities || [],
         status: data.status || "Confirmed",
-        latitude: data.latitude ? String(data.latitude) : null,
-        longitude: data.longitude ? String(data.longitude) : null,
+        latitude: toNullableDecimal(data.latitude),
+        longitude: toNullableDecimal(data.longitude),
         address: data.address || null,
         phoneNumber: data.phoneNumber || null,
         checkIn: data.checkIn
@@ -327,9 +482,9 @@ export async function POST(
         tripId,
         dayId: data.dayId || null,
         name: data.name,
-        address: data.address || null, // Added
-        latitude: data.latitude ? String(data.latitude) : null,
-        longitude: data.longitude ? String(data.longitude) : null,
+        address: data.address || null,
+        latitude: toNullableDecimal(data.latitude),
+        longitude: toNullableDecimal(data.longitude),
         entryFee: data.entryFee ? String(data.entryFee) : null,
         currency: data.currency || "INR",
         openingTime: data.openingTime || null,
@@ -345,11 +500,38 @@ export async function POST(
         name: data.name,
         category: data.category || "Restaurant",
         cuisineType: data.cuisineType || null,
-        latitude: data.latitude ? String(data.latitude) : null,
-        longitude: data.longitude ? String(data.longitude) : null,
+        latitude: toNullableDecimal(data.latitude),
+        longitude: toNullableDecimal(data.longitude),
         address: data.address || null,
         estimatedCost: data.estimatedCost ? String(data.estimatedCost) : null,
         rating: data.rating ? String(data.rating) : null,
+      });
+    } else if (type === "leg") {
+      await db.insert(travelLegs).values({
+        id,
+        tripId,
+        dayId: data.dayId,
+        mode: data.mode || "car",
+        originName: String(data.originName ?? "").trim(),
+        originLat: toNullableDecimal(data.originLat),
+        originLng: toNullableDecimal(data.originLng),
+        destinationName: String(data.destinationName ?? "").trim(),
+        destinationLat: toNullableDecimal(data.destinationLat),
+        destinationLng: toNullableDecimal(data.destinationLng),
+        departureTime:
+          data.departureTime && data.departureTime !== "undefined"
+            ? data.departureTime
+            : null,
+        arrivalTime:
+          data.arrivalTime && data.arrivalTime !== "undefined"
+            ? data.arrivalTime
+            : null,
+        distanceKm: toNullableNumber(data.distanceKm),
+        sequenceOrder: Number(data.sequenceOrder) || 1,
+        metadata:
+          data.metadata && typeof data.metadata === "object"
+            ? data.metadata
+            : {},
       });
     } else {
       return NextResponse.json(
@@ -374,6 +556,7 @@ export async function PUT(
   { params }: { params: Promise<{ tripId: string }> },
 ) {
   try {
+    await params;
     const body = await request.json();
     const { id, type, ...data } = body;
 
@@ -412,8 +595,8 @@ export async function PUT(
           currency: data.currency || "INR",
           bookingReference: data.bookingReference || null,
           externalBookingUrl: data.externalBookingUrl || null,
-          latitude: data.latitude ? String(data.latitude) : null,
-          longitude: data.longitude ? String(data.longitude) : null,
+          latitude: toNullableDecimal(data.latitude),
+          longitude: toNullableDecimal(data.longitude),
         })
         .where(eq(accommodations.id, id));
     } else if (type === "attraction") {
@@ -427,8 +610,8 @@ export async function PUT(
           currency: data.currency || "INR",
           openingTime: data.openingTime || null,
           closingTime: data.closingTime || null,
-          latitude: data.latitude ? String(data.latitude) : null,
-          longitude: data.longitude ? String(data.longitude) : null,
+          latitude: toNullableDecimal(data.latitude),
+          longitude: toNullableDecimal(data.longitude),
           highlights: data.highlights || [],
           photographyNotes: data.photographyNotes || [],
         })
@@ -444,10 +627,43 @@ export async function PUT(
           address: data.address || null,
           estimatedCost: data.estimatedCost ? String(data.estimatedCost) : null,
           rating: data.rating ? String(data.rating) : null,
-          latitude: data.latitude ? String(data.latitude) : null,
-          longitude: data.longitude ? String(data.longitude) : null,
+          latitude: toNullableDecimal(data.latitude),
+          longitude: toNullableDecimal(data.longitude),
         })
         .where(eq(diningSpots.id, id));
+    } else if (type === "leg") {
+      await db
+        .update(travelLegs)
+        .set({
+          dayId: data.dayId,
+          mode: data.mode || "car",
+          originName: String(data.originName ?? "").trim(),
+          originLat: toNullableDecimal(data.originLat),
+          originLng: toNullableDecimal(data.originLng),
+          destinationName: String(data.destinationName ?? "").trim(),
+          destinationLat: toNullableDecimal(data.destinationLat),
+          destinationLng: toNullableDecimal(data.destinationLng),
+          departureTime:
+            data.departureTime && data.departureTime !== "undefined"
+              ? data.departureTime
+              : null,
+          arrivalTime:
+            data.arrivalTime && data.arrivalTime !== "undefined"
+              ? data.arrivalTime
+              : null,
+          distanceKm: toNullableNumber(data.distanceKm),
+          sequenceOrder: Number(data.sequenceOrder) || 1,
+          metadata:
+            data.metadata && typeof data.metadata === "object"
+              ? data.metadata
+              : {},
+        })
+        .where(eq(travelLegs.id, id));
+    } else {
+      return NextResponse.json(
+        { error: "Invalid item type specified" },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json({ success: true });
@@ -480,6 +696,13 @@ export async function DELETE(request: NextRequest) {
       await db.delete(attractions).where(eq(attractions.id, id));
     } else if (type === "dining") {
       await db.delete(diningSpots).where(eq(diningSpots.id, id));
+    } else if (type === "leg") {
+      await db.delete(travelLegs).where(eq(travelLegs.id, id));
+    } else {
+      return NextResponse.json(
+        { error: "Invalid item type specified" },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json({ success: true });

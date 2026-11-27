@@ -41,7 +41,12 @@ export async function getTripItineraryDays(tripId: string) {
     day_metadata:
       typeof row.dayMetadata === "string"
         ? JSON.parse(row.dayMetadata)
-        : row.dayMetadata || { stays: [], dining: [], attractions: [] },
+        : row.dayMetadata || {
+            stays: [],
+            dining: [],
+            attractions: [],
+            leg: [],
+          },
     created_at: row.createdAt,
   }));
 }
@@ -56,7 +61,7 @@ export async function createItineraryDay(data: {
   await requireAuthUser();
 
   const id = globalThis.crypto.randomUUID();
-  const defaultMeta = { stays: [], dining: [], attractions: [] };
+  const defaultMeta = { stays: [], dining: [], attractions: [], leg: [] };
 
   await db.insert(itineraryDays).values({
     id,

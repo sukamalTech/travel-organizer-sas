@@ -239,7 +239,7 @@
 //     );
 // }
 
-// app/(protected)/[id]/page.tsx
+// app/(protected)/create-trip/[id]/page.tsx
 import { Suspense } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';

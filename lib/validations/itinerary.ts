@@ -66,59 +66,10 @@ export type FlightMetadata = z.infer<typeof FlightMetadataSchema>;
 // ==========================================
 // 4. Main Travel Leg Form Schema
 // ==========================================
-export const TravelLegFormSchema = z.object({
-  id: z.string().optional(),
-  trip_id: z.string().min(1, "Trip ID is required"),
-  day_id: z.string().min(1, "Day ID is required"),
-  distance_km: z.coerce
-    .number()
-    .min(0, "Distance must be positive")
-    .optional()
-    .nullable(),
-  sequence_order: z.number().int().min(0).optional().default(1),
-  mode: TransportModeEnum,
-
-  // Origin details
-  origin_name: z.string().min(1, "Origin name is required"),
-  origin_coordinates: CoordinatesSchema,
-  origin_lat: z.number().nullable().optional(),
-  origin_lng: z.number().nullable().optional(),
-
-  // Destination details
-  destination_name: z.string().min(1, "Destination name is required"),
-  destination_coordinates: CoordinatesSchema,
-  destination_lat: z.number().nullable().optional(),
-  destination_lng: z.number().nullable().optional(),
-
-  // Schedule
-  departure_time: z.string().optional().nullable(),
-  arrival_time: z.string().optional().nullable(),
-
-  // Flexible metadata
-  metadata: z.record(z.string(), z.any()).optional().default({}),
-});
-
-// Output type (after schema validation)
-export type TravelLegFormValues = z.infer<typeof TravelLegFormSchema>;
-
-// Input type (what form fields submit)
-export type TravelLegFormInput = z.input<typeof TravelLegFormSchema>;
 
 // ==========================================
 // 5. Shared UI & DB Types
 // ==========================================
-export type LegItem = Omit<TravelLegFormInput, "trip_id" | "day_id"> & {
-  id: string;
-  trip_id?: string;
-  day_id?: string;
-  sequence_order: number;
-  mode: TransportMode;
-  origin_name: string;
-  destination_name: string;
-  distance_km?: number | null;
-  created_at?: string;
-  metadata?: Record<string, any>;
-};
 
 export interface ItineraryDay {
   id: string;
